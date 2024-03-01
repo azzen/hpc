@@ -16,6 +16,13 @@
 	 img->data[position + img->width - 1] * kernel[6] + img->data[position + img->width] * kernel[7] +                 \
 	 img->data[position + img->width + 1] * kernel[8])
 
+#define CONVOLUTION_CHAINED(cache, kernel, position, width)                                                            \
+	(cache[position - width - 1]->pixel_val[0] * kernel[0] + cache[position - width]->pixel_val[0] * kernel[1] +       \
+	 cache[position - width + 1]->pixel_val[0] * kernel[2] + cache[position - 1]->pixel_val[0] * kernel[3] +           \
+	 cache[position]->pixel_val[0] * kernel[4] + cache[position + 1]->pixel_val[0] * kernel[5] +                       \
+	 cache[position + width - 1]->pixel_val[0] * kernel[6] + cache[position + width]->pixel_val[0] * kernel[7] +       \
+	 cache[position + width + 1]->pixel_val[0] * kernel[8])
+
 #define IS_BORDER(img, position)                                                                                       \
 	(position < img->width || position > img->width * (img->height - 1) || position % img->width == 0 ||               \
 	 position % img->width == img->width - 1)
@@ -37,19 +44,16 @@ const uint16_t gauss_kernel[GAUSSIAN_KERNEL_SIZE * GAUSSIAN_KERNEL_SIZE] = {
 
 struct img_1D_t *edge_detection_1D(const struct img_1D_t *input_img) {
 	struct img_1D_t *res_img;
-	struct img_1D_t *grayscale_img;
-	struct img_1D_t *gauss_img;
+	struct img_1D_t *temp_img;
 
 	res_img = allocate_image_1D(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
-	grayscale_img = allocate_image_1D(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
-	gauss_img = allocate_image_1D(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
+	temp_img = allocate_image_1D(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
 
-	rgb_to_grayscale_1D(input_img, grayscale_img);
-	gaussian_filter_1D(grayscale_img, gauss_img, gauss_kernel);
-	sobel_filter_1D(gauss_img, res_img, sobel_v_kernel, sobel_h_kernel);
+	rgb_to_grayscale_1D(input_img, res_img);
+	gaussian_filter_1D(res_img, temp_img, gauss_kernel);
+	sobel_filter_1D(temp_img, res_img, sobel_v_kernel, sobel_h_kernel);
 
-	free_image(grayscale_img);
-	free_image(gauss_img);
+	free_image(temp_img);
 
 	return res_img;
 }
@@ -101,22 +105,20 @@ void sobel_filter_1D(const struct img_1D_t *img, struct img_1D_t *res_img, const
 
 struct img_chained_t *edge_detection_chained(const struct img_chained_t *input_img) {
 	struct img_chained_t *res_img;
-	struct img_chained_t *grayscale_img;
-	struct img_chained_t *gauss_img;
+	struct img_chained_t *temp_img;
 
 	res_img = allocate_image_chained(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
-	grayscale_img = allocate_image_chained(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
-	gauss_img = allocate_image_chained(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
+	temp_img = allocate_image_chained(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
 
-	rgb_to_grayscale_chained(input_img, grayscale_img);
-	gaussian_filter_chained(grayscale_img, gauss_img, gauss_kernel);
+	rgb_to_grayscale_chained(input_img, res_img);
+	gaussian_filter_chained(res_img, temp_img, gauss_kernel);
+	sobel_filter_chained(temp_img, res_img, sobel_v_kernel, sobel_h_kernel);
 
-	return gauss_img;
+	return res_img;
 }
 
 void rgb_to_grayscale_chained(const struct img_chained_t *img, struct img_chained_t *result) {
-	struct pixel_t *cur_img_pixel;
-	struct pixel_t *cur_res_pixel;
+	struct pixel_t *cur_img_pixel, *cur_res_pixel;
 	uint8_t r, g, b;
 
 	cur_img_pixel = img->first_pixel;
@@ -139,11 +141,91 @@ void gaussian_filter_chained(const struct img_chained_t *img, struct img_chained
 
 	const uint16_t gauss_ponderation = 16;
 	struct pixel_t *cur_img_pixel, *cur_res_pixel;
+	struct pixel_t **cache;
 	size_t i;
-	// TODO
+
+	cache = (struct pixel_t **)malloc(sizeof(struct pixel_t *) * img->width * img->height * img->components);
+	if (!cache) {
+		fprintf(stderr, "[%s] cache allocation error\n", __func__);
+		perror(__func__);
+		exit(EXIT_FAILURE);
+	}
+
+	cur_img_pixel = img->first_pixel;
+	cur_res_pixel = res_img->first_pixel;
+
+	// populate cache
+	for (i = 0; i < img->width * img->height * img->components; ++i) {
+		cache[i] = cur_img_pixel;
+		cur_img_pixel = cur_img_pixel->next_pixel;
+	}
+
+	cur_img_pixel = img->first_pixel;
+	cur_res_pixel = res_img->first_pixel;
+
+	for (i = 0; i < img->width * img->height * img->components; ++i) {
+		if (IS_BORDER(img, i)) {
+			cur_res_pixel->pixel_val[0] = cur_img_pixel->pixel_val[0];
+			cur_img_pixel = cur_img_pixel->next_pixel;
+			cur_res_pixel = cur_res_pixel->next_pixel;
+			continue;
+		}
+
+		// apply gaussian filter
+		cur_res_pixel->pixel_val[0] = CONVOLUTION_CHAINED(cache, kernel, i, img->width) / gauss_ponderation;
+
+		cur_img_pixel = cur_img_pixel->next_pixel;
+		cur_res_pixel = cur_res_pixel->next_pixel;
+	}
+
+	free(cache);
 }
 
 void sobel_filter_chained(const struct img_chained_t *img, struct img_chained_t *res_img, const int16_t *v_kernel,
 						  const int16_t *h_kernel) {
-	// TODO
+	struct pixel_t *cur_img_pixel, *cur_res_pixel;
+	struct pixel_t **cache;
+	int16_t gx, gy;
+	double_t magnitude;
+
+	size_t i;
+
+	cache = (struct pixel_t **)malloc(sizeof(struct pixel_t *) * img->width * img->height * img->components);
+
+	if (!cache) {
+		fprintf(stderr, "[%s] cache allocation error\n", __func__);
+		perror(__func__);
+		exit(EXIT_FAILURE);
+	}
+
+	cur_img_pixel = img->first_pixel;
+	cur_res_pixel = res_img->first_pixel;
+
+	// populate cache
+	for (i = 0; i < img->width * img->height * img->components; ++i) {
+		cache[i] = cur_img_pixel;
+		cur_img_pixel = cur_img_pixel->next_pixel;
+	}
+
+	cur_img_pixel = img->first_pixel;
+	cur_res_pixel = res_img->first_pixel;
+
+	for (i = 0; i < img->width * img->height * img->components; ++i) {
+		if (IS_BORDER(img, i)) {
+			cur_res_pixel->pixel_val[0] = cur_img_pixel->pixel_val[0];
+			cur_img_pixel = cur_img_pixel->next_pixel;
+			cur_res_pixel = cur_res_pixel->next_pixel;
+			continue;
+		}
+
+		gx = CONVOLUTION_CHAINED(cache, h_kernel, i, img->width);
+		gy = CONVOLUTION_CHAINED(cache, v_kernel, i, img->width);
+		magnitude = sqrt(gx * gx + gy * gy);
+		cur_res_pixel->pixel_val[0] = magnitude > SOBEL_BINARY_THRESHOLD ? PIXEL_WHITE : PIXEL_BLACK;
+
+		cur_img_pixel = cur_img_pixel->next_pixel;
+		cur_res_pixel = cur_res_pixel->next_pixel;
+	}
+
+	free(cache);
 }

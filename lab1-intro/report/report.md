@@ -48,7 +48,7 @@ En temps normal, les résultats en fonction des structures de données devraient
 
 Ici, les performances pour la liste chaînée sont quand même intéressantes. Afin d'accélérer le calcul, j'ai mis en place un cache le temps du traitement de l'image. C'est un tableau 1D de pointeurs vers les éléments de la liste chaînée, pour le remplir je dois donc parcourir au moins une fois toute la liste.
 
-Cela me permet d'avoir un calcul de convolution quasiment identique pour les listes chaînées et les tableau unidimensionnels.
+Cela me permet d'avoir un calcul de convolution quasiment identique pour les listes chaînées et les tableaux unidimensionnels.
 
 Toutefois, le coût de la mise en place du cache impacte directement les performances du traitement (et sur la mémoire), cela reste toujours mieux que de parcourir la liste autant de fois qu'il ne faille accéder à un certain élément.
 

@@ -103,16 +103,28 @@ void sobel_filter_1D(const struct img_1D_t *img, struct img_1D_t *res_img, const
 	}
 }
 
+static struct pixel_t **cache = NULL;
+
 struct img_chained_t *edge_detection_chained(const struct img_chained_t *input_img) {
 	struct img_chained_t *res_img;
 	struct img_chained_t *temp_img;
 
 	res_img = allocate_image_chained(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
 	temp_img = allocate_image_chained(input_img->width, input_img->height, COMPONENT_GRAYSCALE);
+	cache = (struct pixel_t **)malloc(sizeof(struct pixel_t *) * input_img->width * input_img->height *
+									  input_img->components);
+
+	if (!cache) {
+		fprintf(stderr, "[%s] cache allocation error\n", __func__);
+		perror(__func__);
+		exit(EXIT_FAILURE);
+	}
 
 	rgb_to_grayscale_chained(input_img, res_img);
 	gaussian_filter_chained(res_img, temp_img, gauss_kernel);
 	sobel_filter_chained(temp_img, res_img, sobel_v_kernel, sobel_h_kernel);
+
+	free(cache);
 
 	return res_img;
 }
@@ -141,15 +153,7 @@ void gaussian_filter_chained(const struct img_chained_t *img, struct img_chained
 
 	const uint16_t gauss_ponderation = 16;
 	struct pixel_t *cur_img_pixel, *cur_res_pixel;
-	struct pixel_t **cache;
 	size_t i;
-
-	cache = (struct pixel_t **)malloc(sizeof(struct pixel_t *) * img->width * img->height * img->components);
-	if (!cache) {
-		fprintf(stderr, "[%s] cache allocation error\n", __func__);
-		perror(__func__);
-		exit(EXIT_FAILURE);
-	}
 
 	cur_img_pixel = img->first_pixel;
 	cur_res_pixel = res_img->first_pixel;
@@ -177,26 +181,15 @@ void gaussian_filter_chained(const struct img_chained_t *img, struct img_chained
 		cur_img_pixel = cur_img_pixel->next_pixel;
 		cur_res_pixel = cur_res_pixel->next_pixel;
 	}
-
-	free(cache);
 }
 
 void sobel_filter_chained(const struct img_chained_t *img, struct img_chained_t *res_img, const int16_t *v_kernel,
 						  const int16_t *h_kernel) {
 	struct pixel_t *cur_img_pixel, *cur_res_pixel;
-	struct pixel_t **cache;
 	int16_t gx, gy;
 	double_t magnitude;
 
 	size_t i;
-
-	cache = (struct pixel_t **)malloc(sizeof(struct pixel_t *) * img->width * img->height * img->components);
-
-	if (!cache) {
-		fprintf(stderr, "[%s] cache allocation error\n", __func__);
-		perror(__func__);
-		exit(EXIT_FAILURE);
-	}
 
 	cur_img_pixel = img->first_pixel;
 	cur_res_pixel = res_img->first_pixel;

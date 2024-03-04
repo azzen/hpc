@@ -29,7 +29,7 @@ Images d'entrées :
 |-----------------|------------------------------|---------------------------------|
 | `half-life.png` | $2000 \times 2090 = 4038000$ | 3 (8-bit RGB)                   |
 | `medalion.png`  | $1267 \times 919 = 1164373$  | 3 (8-bit RGB)                   |
-| `half-life.png` | $1150 \times 710 = 816500$   | 3 (8-bit RGB)                   |
+| `nyc.png`       | $1150 \times 710 = 816500$   | 3 (8-bit RGB)                   |
 
 Nombre de type : 
 

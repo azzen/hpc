@@ -219,6 +219,4 @@ void sobel_filter_chained(const struct img_chained_t *img, struct img_chained_t 
 		cur_img_pixel = cur_img_pixel->next_pixel;
 		cur_res_pixel = cur_res_pixel->next_pixel;
 	}
-
-	free(cache);
 }

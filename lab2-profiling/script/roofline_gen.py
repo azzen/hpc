@@ -30,5 +30,5 @@ plt.plot(x_values, y_values)
 plt.xlabel('Operational Intensity')
 plt.ylabel('Performance [MFLOPS/s]')
 plt.title(f'Roofline model')
-plt.show()
+plt.savefig("roofline.png")
 

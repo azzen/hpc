@@ -1,0 +1,193 @@
+--------------------------------------------------------------------------------
+CPU name:       Intel(R) Core(TM) i9-9900K CPU @ 3.60GHz
+CPU type:       Intel Coffeelake processor
+CPU clock:      3.60 GHz
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+Region edge_detection_1d, Group 1: MEM_DP
++-------------------+------------+
+|    Region Info    | HWThread 0 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.117468 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 0 |
++------------------------------------------+---------+------------+
+|             INSTR_RETIRED_ANY            |  FIXC0  |  843410600 |
+|           CPU_CLK_UNHALTED_CORE          |  FIXC1  |  543566100 |
+|           CPU_CLK_UNHALTED_REF           |  FIXC2  |  401585800 |
+|              PWR_PKG_ENERGY              |   PWR0  |     3.3184 |
+|              PWR_DRAM_ENERGY             |   PWR3  |          0 |
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |   16711970 |
+| FP_ARITH_INST_RETIRED_256B_PACKED_DOUBLE |   PMC2  |          0 |
+|                DRAM_READS                | MBOX0C1 |    1153882 |
+|                DRAM_WRITES               | MBOX0C2 |     378187 |
++------------------------------------------+---------+------------+
+
++-----------------------------------+------------+
+|               Metric              | HWThread 0 |
++-----------------------------------+------------+
+|        Runtime (RDTSC) [s]        |     0.1175 |
+|        Runtime unhalted [s]       |     0.1510 |
+|            Clock [MHz]            |  4872.6321 |
+|                CPI                |     0.6445 |
+|             Energy [J]            |     3.3184 |
+|             Power [W]             |    28.2491 |
+|          Energy DRAM [J]          |          0 |
+|           Power DRAM [W]          |          0 |
+|            DP [MFLOP/s]           |   142.2685 |
+|          AVX DP [MFLOP/s]         |          0 |
+|          Packed [MUOPS/s]         |          0 |
+|          Scalar [MUOPS/s]         |   142.2685 |
+|  Memory load bandwidth [MBytes/s] |   628.6697 |
+|  Memory load data volume [GBytes] |     0.0738 |
+| Memory evict bandwidth [MBytes/s] |   206.0477 |
+| Memory evict data volume [GBytes] |     0.0242 |
+|    Memory bandwidth [MBytes/s]    |   834.7174 |
+|    Memory data volume [GBytes]    |     0.0981 |
+|       Operational intensity       |     0.1704 |
++-----------------------------------+------------+
+
+Region rgb_grayscale_1d, Group 1: MEM_DP
++-------------------+------------+
+|    Region Info    | HWThread 0 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.030708 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 0 |
++------------------------------------------+---------+------------+
+|             INSTR_RETIRED_ANY            |  FIXC0  |  129585900 |
+|           CPU_CLK_UNHALTED_CORE          |  FIXC1  |  140469100 |
+|           CPU_CLK_UNHALTED_REF           |  FIXC2  |  104077400 |
+|              PWR_PKG_ENERGY              |   PWR0  |     0.8321 |
+|              PWR_DRAM_ENERGY             |   PWR3  |          0 |
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |   12540020 |
+| FP_ARITH_INST_RETIRED_256B_PACKED_DOUBLE |   PMC2  |          0 |
+|                DRAM_READS                | MBOX0C1 |     332579 |
+|                DRAM_WRITES               | MBOX0C2 |       8171 |
++------------------------------------------+---------+------------+
+
++-----------------------------------+------------+
+|               Metric              | HWThread 0 |
++-----------------------------------+------------+
+|        Runtime (RDTSC) [s]        |     0.0307 |
+|        Runtime unhalted [s]       |     0.0390 |
+|            Clock [MHz]            |  4858.6316 |
+|                CPI                |     1.0840 |
+|             Energy [J]            |     0.8321 |
+|             Power [W]             |    27.0966 |
+|          Energy DRAM [J]          |          0 |
+|           Power DRAM [W]          |          0 |
+|            DP [MFLOP/s]           |   408.3588 |
+|          AVX DP [MFLOP/s]         |          0 |
+|          Packed [MUOPS/s]         |          0 |
+|          Scalar [MUOPS/s]         |   408.3588 |
+|  Memory load bandwidth [MBytes/s] |   693.1360 |
+|  Memory load data volume [GBytes] |     0.0213 |
+| Memory evict bandwidth [MBytes/s] |    17.0294 |
+| Memory evict data volume [GBytes] |     0.0005 |
+|    Memory bandwidth [MBytes/s]    |   710.1654 |
+|    Memory data volume [GBytes]    |     0.0218 |
+|       Operational intensity       |     0.5750 |
++-----------------------------------+------------+
+
+Region gaussian_1d, Group 1: MEM_DP
++-------------------+------------+
+|    Region Info    | HWThread 0 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.038637 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 0 |
++------------------------------------------+---------+------------+
+|             INSTR_RETIRED_ANY            |  FIXC0  |  288068300 |
+|           CPU_CLK_UNHALTED_CORE          |  FIXC1  |  178572700 |
+|           CPU_CLK_UNHALTED_REF           |  FIXC2  |  131750700 |
+|              PWR_PKG_ENERGY              |   PWR0  |     1.3104 |
+|              PWR_DRAM_ENERGY             |   PWR3  |          0 |
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |         16 |
+| FP_ARITH_INST_RETIRED_256B_PACKED_DOUBLE |   PMC2  |          0 |
+|                DRAM_READS                | MBOX0C1 |     496010 |
+|                DRAM_WRITES               | MBOX0C2 |     229541 |
++------------------------------------------+---------+------------+
+
++-----------------------------------+--------------+
+|               Metric              |  HWThread 0  |
++-----------------------------------+--------------+
+|        Runtime (RDTSC) [s]        |       0.0386 |
+|        Runtime unhalted [s]       |       0.0496 |
+|            Clock [MHz]            |    4879.2351 |
+|                CPI                |       0.6199 |
+|             Energy [J]            |       1.3104 |
+|             Power [W]             |      33.9147 |
+|          Energy DRAM [J]          |            0 |
+|           Power DRAM [W]          |            0 |
+|            DP [MFLOP/s]           |       0.0004 |
+|          AVX DP [MFLOP/s]         |            0 |
+|          Packed [MUOPS/s]         |            0 |
+|          Scalar [MUOPS/s]         |       0.0004 |
+|  Memory load bandwidth [MBytes/s] |     821.6107 |
+|  Memory load data volume [GBytes] |       0.0317 |
+| Memory evict bandwidth [MBytes/s] |     380.2209 |
+| Memory evict data volume [GBytes] |       0.0147 |
+|    Memory bandwidth [MBytes/s]    |    1201.8316 |
+|    Memory data volume [GBytes]    |       0.0464 |
+|       Operational intensity       | 3.445657e-07 |
++-----------------------------------+--------------+
+
+Region sobel_1d, Group 1: MEM_DP
++-------------------+------------+
+|    Region Info    | HWThread 0 |
++-------------------+------------+
+| RDTSC Runtime [s] |   0.047003 |
+|     call count    |          1 |
++-------------------+------------+
+
++------------------------------------------+---------+------------+
+|                   Event                  | Counter | HWThread 0 |
++------------------------------------------+---------+------------+
+|             INSTR_RETIRED_ANY            |  FIXC0  |  425737400 |
+|           CPU_CLK_UNHALTED_CORE          |  FIXC1  |  224457200 |
+|           CPU_CLK_UNHALTED_REF           |  FIXC2  |  165707600 |
+|              PWR_PKG_ENERGY              |   PWR0  |     1.1759 |
+|              PWR_DRAM_ENERGY             |   PWR3  |          0 |
+| FP_ARITH_INST_RETIRED_128B_PACKED_DOUBLE |   PMC0  |          0 |
+|    FP_ARITH_INST_RETIRED_SCALAR_DOUBLE   |   PMC1  |    4171840 |
+| FP_ARITH_INST_RETIRED_256B_PACKED_DOUBLE |   PMC2  |          0 |
+|                DRAM_READS                | MBOX0C1 |     322484 |
+|                DRAM_WRITES               | MBOX0C2 |     139975 |
++------------------------------------------+---------+------------+
+
++-----------------------------------+------------+
+|               Metric              | HWThread 0 |
++-----------------------------------+------------+
+|        Runtime (RDTSC) [s]        |     0.0470 |
+|        Runtime unhalted [s]       |     0.0624 |
+|            Clock [MHz]            |  4876.1911 |
+|                CPI                |     0.5272 |
+|             Energy [J]            |     1.1759 |
+|             Power [W]             |    25.0176 |
+|          Energy DRAM [J]          |          0 |
+|           Power DRAM [W]          |          0 |
+|            DP [MFLOP/s]           |    88.7568 |
+|          AVX DP [MFLOP/s]         |          0 |
+|          Packed [MUOPS/s]         |          0 |
+|          Scalar [MUOPS/s]         |    88.7568 |
+|  Memory load bandwidth [MBytes/s] |   439.0985 |
+|  Memory load data volume [GBytes] |     0.0206 |
+| Memory evict bandwidth [MBytes/s] |   190.5918 |
+| Memory evict data volume [GBytes] |     0.0090 |
+|    Memory bandwidth [MBytes/s]    |   629.6903 |
+|    Memory data volume [GBytes]    |     0.0296 |
+|       Operational intensity       |     0.1410 |
++-----------------------------------+------------+

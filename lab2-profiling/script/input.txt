@@ -2,3 +2,4 @@
 31810.17
 0.1704 142.2685 baseline_1d
 0.0052 51.2874 baseline_chained
+0.2647 111.8367 1d_sobel

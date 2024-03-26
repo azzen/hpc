@@ -5,33 +5,18 @@
 #include "image.h"
 #include "sobel.h"
 
+#include <immintrin.h>
+
 #include <likwid-marker.h>
 
 #define GAUSSIAN_KERNEL_SIZE 3
 #define SOBEL_KERNEL_SIZE 3
 #define SOBEL_BINARY_THRESHOLD 22500 // 150 * 150
 
-#define CONVOLUTION_1D(img, kernel, position, width)                                                                   \
-	(img->data[position - width - 1] * kernel[0] + img->data[position - width] * kernel[1] +                           \
-	 img->data[position - width + 1] * kernel[2] + img->data[position - 1] * kernel[3] +                               \
-	 img->data[position] * kernel[4] + img->data[position + 1] * kernel[5] +                                           \
-	 img->data[position + width - 1] * kernel[6] + img->data[position + width] * kernel[7] +                           \
-	 img->data[position + width + 1] * kernel[8])
+#define IS_BORDER(position, width) (position == 0 || position == width - 1)
 
-#define CONVOLUTION_CHAINED(cache, kernel, position, width)                                                            \
-	(cache[position - width - 1]->pixel_val[0] * kernel[0] + cache[position - width]->pixel_val[0] * kernel[1] +       \
-	 cache[position - width + 1]->pixel_val[0] * kernel[2] + cache[position - 1]->pixel_val[0] * kernel[3] +           \
-	 cache[position]->pixel_val[0] * kernel[4] + cache[position + 1]->pixel_val[0] * kernel[5] +                       \
-	 cache[position + width - 1]->pixel_val[0] * kernel[6] + cache[position + width]->pixel_val[0] * kernel[7] +       \
-	 cache[position + width + 1]->pixel_val[0] * kernel[8])
-
-#define IS_BORDER(position, width)                                                                            \
-	(position % width == 0 || position % width == width - 1)
-
-#define OFFSETS(width) 																							   \
-	{                                                                                                                  \
-		-width - 1, -width, -width + 1, -1, 0, 1, width - 1, width, width + 1                                              \
-	}
+#define OFFSETS(width)                                                                                                 \
+	{ -width - 1, -width, -width + 1, -1, 0, 1, width - 1, width, width + 1 }
 
 #define PIXEL_BLACK 0
 #define PIXEL_WHITE 255
@@ -86,29 +71,27 @@ void rgb_to_grayscale_1D(const struct img_1D_t *img, struct img_1D_t *result) {
 void gaussian_filter_1D(const struct img_1D_t *img, struct img_1D_t *res_img, const uint16_t *kernel) {
 	const uint16_t gauss_ponderation = 16;
 	size_t i;
-	size_t j;
 
 	const size_t width = img->width;
 	const size_t height = img->height;
 	const size_t img_size = width * height;
 	const int32_t offsets[] = OFFSETS(width);
 
-	int32_t sum;
-
 	LIKWID_MARKER_START("gaussian_1d");
 	// skip bottom and top borders
 	for (i = width; i < img_size - width; ++i) {
-		if (IS_BORDER(i, width)) {
+		uint32_t pos = i % width;
+		if (IS_BORDER(pos, width)) {
 			res_img->data[i] = img->data[i];
 			continue;
 		}
 
-		sum = 0;
-		for (j = 0; j < 9; ++j) {
-			sum += img->data[i + offsets[j]] * kernel[j];
-		}
-		res_img->data[i] = sum / gauss_ponderation;
-
+		res_img->data[i] = (img->data[i + offsets[0]] * kernel[0] + img->data[i + offsets[1]] * kernel[1] +
+							img->data[i + offsets[2]] * kernel[2] + img->data[i + offsets[3]] * kernel[3] +
+							img->data[i + offsets[4]] * kernel[4] + img->data[i + offsets[5]] * kernel[5] +
+							img->data[i + offsets[6]] * kernel[6] + img->data[i + offsets[7]] * kernel[7] +
+							img->data[i + offsets[8]] * kernel[8]) /
+						   gauss_ponderation;
 	}
 	LIKWID_MARKER_STOP("gaussian_1d");
 }
@@ -126,20 +109,26 @@ void sobel_filter_1D(const struct img_1D_t *img, struct img_1D_t *res_img, const
 
 	LIKWID_MARKER_START("sobel_1d");
 	for (i = width; i < img_size - width; ++i) {
-		if (IS_BORDER(i, width)) {
+		uint32_t pos = i % width;
+		if (IS_BORDER(pos, width)) {
 			res_img->data[i] = img->data[i];
 			continue;
-		}		
-
-		gx = 0;
-		gy = 0;
-		for (size_t j = 0; j < 9; ++j) {
-			gx += img->data[i + offsets[j]] * h_kernel[j];
-			gy += img->data[i + offsets[j]] * v_kernel[j];
 		}
 
+		gx = img->data[i + offsets[0]] * h_kernel[0] + img->data[i + offsets[1]] * h_kernel[1] +
+			 img->data[i + offsets[2]] * h_kernel[2] + img->data[i + offsets[3]] * h_kernel[3] +
+			 img->data[i + offsets[4]] * h_kernel[4] + img->data[i + offsets[5]] * h_kernel[5] +
+			 img->data[i + offsets[6]] * h_kernel[6] + img->data[i + offsets[7]] * h_kernel[7] +
+			 img->data[i + offsets[8]] * h_kernel[8];
+
+		gy = img->data[i + offsets[0]] * v_kernel[0] + img->data[i + offsets[1]] * v_kernel[1] +
+			 img->data[i + offsets[2]] * v_kernel[2] + img->data[i + offsets[3]] * v_kernel[3] +
+			 img->data[i + offsets[4]] * v_kernel[4] + img->data[i + offsets[5]] * v_kernel[5] +
+			 img->data[i + offsets[6]] * v_kernel[6] + img->data[i + offsets[7]] * v_kernel[7] +
+			 img->data[i + offsets[8]] * v_kernel[8];
+
 		magnitude = gx * gx + gy * gy;
-		
+
 		res_img->data[i] = magnitude > SOBEL_BINARY_THRESHOLD ? PIXEL_WHITE : PIXEL_BLACK;
 	}
 	LIKWID_MARKER_STOP("sobel_1d");
@@ -148,7 +137,7 @@ void sobel_filter_1D(const struct img_1D_t *img, struct img_1D_t *res_img, const
 static struct pixel_t **cache = NULL;
 
 struct img_chained_t *edge_detection_chained(const struct img_chained_t *input_img) {
-	
+
 	struct img_chained_t *res_img;
 	struct img_chained_t *temp_img;
 
@@ -176,17 +165,15 @@ struct img_chained_t *edge_detection_chained(const struct img_chained_t *input_i
 
 void rgb_to_grayscale_chained(const struct img_chained_t *img, struct img_chained_t *result) {
 	struct pixel_t *cur_img_pixel, *cur_res_pixel;
-	uint8_t r, g, b;
 
 	cur_img_pixel = img->first_pixel;
 	cur_res_pixel = result->first_pixel;
+
 	LIKWID_MARKER_START("grayscale_chained");
 	do {
-		r = cur_img_pixel->pixel_val[R_OFFSET] * FACTOR_R;
-		g = cur_img_pixel->pixel_val[G_OFFSET] * FACTOR_G;
-		b = cur_img_pixel->pixel_val[B_OFFSET] * FACTOR_B;
-
-		cur_res_pixel->pixel_val[0] = r + g + b;
+		cur_res_pixel->pixel_val[0] = cur_img_pixel->pixel_val[R_OFFSET] * FACTOR_R +
+									  cur_img_pixel->pixel_val[G_OFFSET] * FACTOR_G +
+									  cur_img_pixel->pixel_val[B_OFFSET] * FACTOR_B;
 
 		cur_img_pixel = cur_img_pixel->next_pixel;
 		cur_res_pixel = cur_res_pixel->next_pixel;
@@ -205,7 +192,6 @@ void gaussian_filter_chained(const struct img_chained_t *img, struct img_chained
 	const size_t height = img->height;
 	const size_t img_size = width * height * img->components;
 	const int32_t offsets[] = OFFSETS(width);
-	int32_t sum;
 
 	cur_img_pixel = img->first_pixel;
 	cur_res_pixel = res_img->first_pixel;
@@ -221,7 +207,8 @@ void gaussian_filter_chained(const struct img_chained_t *img, struct img_chained
 	cur_res_pixel = res_img->first_pixel;
 
 	for (i = width; i < img_size - width; ++i) {
-		if (IS_BORDER(i, width)) {
+		uint32_t pos = i % width;
+		if (IS_BORDER(pos, width)) {
 			cur_res_pixel->pixel_val[0] = cur_img_pixel->pixel_val[0];
 			cur_img_pixel = cur_img_pixel->next_pixel;
 			cur_res_pixel = cur_res_pixel->next_pixel;
@@ -229,12 +216,13 @@ void gaussian_filter_chained(const struct img_chained_t *img, struct img_chained
 		}
 
 		// apply gaussian filter
-		sum = 0;
-		for (size_t j = 0; j < 9; ++j) {
-			sum += cache[i + offsets[j]]->pixel_val[0] * kernel[j];
-		}
-
-		cur_res_pixel->pixel_val[0] = sum / gauss_ponderation;
+		cur_res_pixel->pixel_val[0] =
+			(cache[i + offsets[0]]->pixel_val[0] * kernel[0] + cache[i + offsets[1]]->pixel_val[0] * kernel[1] +
+			 cache[i + offsets[2]]->pixel_val[0] * kernel[2] + cache[i + offsets[3]]->pixel_val[0] * kernel[3] +
+			 cache[i + offsets[4]]->pixel_val[0] * kernel[4] + cache[i + offsets[5]]->pixel_val[0] * kernel[5] +
+			 cache[i + offsets[6]]->pixel_val[0] * kernel[6] + cache[i + offsets[7]]->pixel_val[0] * kernel[7] +
+			 cache[i + offsets[8]]->pixel_val[0] * kernel[8]) /
+			gauss_ponderation;
 
 		cur_img_pixel = cur_img_pixel->next_pixel;
 		cur_res_pixel = cur_res_pixel->next_pixel;
@@ -269,19 +257,25 @@ void sobel_filter_chained(const struct img_chained_t *img, struct img_chained_t 
 	cur_res_pixel = res_img->first_pixel;
 
 	for (i = width; i < img_size - width; ++i) {
-		if (IS_BORDER(i, width)) {
+		uint32_t pos = i % width;
+		if (IS_BORDER(pos, width)) {
 			cur_res_pixel->pixel_val[0] = cur_img_pixel->pixel_val[0];
 			cur_img_pixel = cur_img_pixel->next_pixel;
 			cur_res_pixel = cur_res_pixel->next_pixel;
 			continue;
 		}
 
-		gx = 0;
-		gy = 0;
-		for (size_t j = 0; j < 9; ++j) {
-			gx += cache[i + offsets[j]]->pixel_val[0] * h_kernel[j];
-			gy += cache[i + offsets[j]]->pixel_val[0] * v_kernel[j];
-		}
+		gx = cache[i + offsets[0]]->pixel_val[0] * h_kernel[0] + cache[i + offsets[1]]->pixel_val[0] * h_kernel[1] +
+			 cache[i + offsets[2]]->pixel_val[0] * h_kernel[2] + cache[i + offsets[3]]->pixel_val[0] * h_kernel[3] +
+			 cache[i + offsets[4]]->pixel_val[0] * h_kernel[4] + cache[i + offsets[5]]->pixel_val[0] * h_kernel[5] +
+			 cache[i + offsets[6]]->pixel_val[0] * h_kernel[6] + cache[i + offsets[7]]->pixel_val[0] * h_kernel[7] +
+			 cache[i + offsets[8]]->pixel_val[0] * h_kernel[8];
+
+		gy = cache[i + offsets[0]]->pixel_val[0] * v_kernel[0] + cache[i + offsets[1]]->pixel_val[0] * v_kernel[1] +
+			 cache[i + offsets[2]]->pixel_val[0] * v_kernel[2] + cache[i + offsets[3]]->pixel_val[0] * v_kernel[3] +
+			 cache[i + offsets[4]]->pixel_val[0] * v_kernel[4] + cache[i + offsets[5]]->pixel_val[0] * v_kernel[5] +
+			 cache[i + offsets[6]]->pixel_val[0] * v_kernel[6] + cache[i + offsets[7]]->pixel_val[0] * v_kernel[7] +
+			 cache[i + offsets[8]]->pixel_val[0] * v_kernel[8];
 
 		magnitude = gx * gx + gy * gy;
 		cur_res_pixel->pixel_val[0] = magnitude > SOBEL_BINARY_THRESHOLD ? PIXEL_WHITE : PIXEL_BLACK;

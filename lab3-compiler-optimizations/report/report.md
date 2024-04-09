@@ -52,8 +52,13 @@ Le compilateur optimise alors l'opération en proposant une boucle alternative q
 
 ## Partie 2
 
+### Loop unrolling
 
+Dans mon code j'ai, au début, créé un code qui bouclait sur le noyau pour calculer les convolutions, dans cet [exemple](https://godbolt.org/z/rcTKeba7o), je fourni un code fonctionnel de calcul de convolution (filtre gaussien). Le but ici est de montrer le mécanisme de loop unrolling et de loop peeling comme discuté en cours, comme nous avons un faible nombre d'itérations et qu'il est connu à la compilation (taille du noyau = 9), le compilateur est capable de dérouler la boucle et directement exécuter les instructions à la suite. 
 
+Ce mécanisme augmente nécessairement la taille du code cependant il n'y a plus de `jmp` + `cmp` qui est effectué pour vérifier la valeur de l'indice d'itération (puisqu'il n'existe plus). L'optimisation manuelle est de simplement nous-même dérouler la boucle.
+
+Finalement, GCC indique toutefois que cette optimisation ne garantie pas un gain de performances. 
 
 
 

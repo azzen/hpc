@@ -20,7 +20,7 @@ set(SEG_SRC
 )
 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -fno-inline")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g -Wall -fno-inline -march=native")
 
 include_directories(
     ../lib/stb

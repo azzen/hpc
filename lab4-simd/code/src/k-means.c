@@ -44,7 +44,7 @@ void kmeans_pp(struct img_1D_t *image, int num_clusters, uint8_t *centers) {
 	for (int i = 1; i < num_clusters; ++i) {
 		float total_weight = 0.0;
 		int j, rem_j;
-		__m128 dist_v;
+		__m256 dist_v;
 
 		// Calculate total weight (sum of distances)
 
@@ -52,10 +52,10 @@ void kmeans_pp(struct img_1D_t *image, int num_clusters, uint8_t *centers) {
 		// 	total_weight += distances[i];
 		// }
 
-		rem_j = image->width * image->height - ((image->width * image->height) % 4); // 4 pixels per iteration
-		for (j = 0; j < image->width * image->height; j += 4) {
-			dist_v = _mm_loadu_ps(distances + j);
-			dist_v = _mm_hadd_ps(dist_v, dist_v);
+		rem_j = image->width * image->height - ((image->width * image->height) % 8); // 8 pixels per iteration
+		for (j = 0; j < image->width * image->height; j += 8) {
+			dist_v = _mm256_loadu_ps(distances + j);
+			dist_v = _mm256_hadd_ps(dist_v, dist_v);
 			total_weight += dist_v[0];
 		}
 
@@ -67,7 +67,7 @@ void kmeans_pp(struct img_1D_t *image, int num_clusters, uint8_t *centers) {
 		int index = 0;
 
 		// Choose the next center based on weighted probability
-		while (r > distances[index]) {
+		while (index < image->width * image->height && r > distances[index]) {
 			r -= distances[index];
 			index++;
 		}

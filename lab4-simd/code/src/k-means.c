@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define EXPAND_u8_u32(arr)                                                                                             \
-	(uint32_t) arr[0], (uint32_t)arr[1], (uint32_t)arr[2], (uint32_t)arr[3], (uint32_t)arr[4], (uint32_t)arr[5],       \
-		(uint32_t)arr[6], (uint32_t)arr[7]
+#define EXPAND_u8_u32(arr, scale)                                                                                      \
+	(uint32_t) arr[0 * scale], (uint32_t)arr[1 * scale], (uint32_t)arr[2 * scale], (uint32_t)arr[3 * scale],           \
+		(uint32_t)arr[4 * scale], (uint32_t)arr[5 * scale], (uint32_t)arr[6 * scale], (uint32_t)arr[7 * scale]
 
 // This function will calculate the euclidean distance between two pixels.
 // Instead of using coordinates, we use the RGB value for evaluating distance.
@@ -35,9 +35,9 @@ void distance_sqr_avx(uint8_t *p1, uint8_t *p2, uint32_t *res, int single) {
 	uint8_t *p2_g = p2 + G_OFFSET;
 	uint8_t *p2_b = p2 + B_OFFSET;
 
-	__m256i p1r_v = _mm256_set_epi32(EXPAND_u8_u32(p1_r));
-	__m256i p1g_v = _mm256_set_epi32(EXPAND_u8_u32(p1_g));
-	__m256i p1b_v = _mm256_set_epi32(EXPAND_u8_u32(p1_b));
+	__m256i p1r_v = _mm256_set_epi32(EXPAND_u8_u32(p1_r, 3));
+	__m256i p1g_v = _mm256_set_epi32(EXPAND_u8_u32(p1_g, 3));
+	__m256i p1b_v = _mm256_set_epi32(EXPAND_u8_u32(p1_b, 3));
 
 	__m256i p2r_v = _mm256_set1_epi32((uint32_t)(p2_r[0]));
 	__m256i p2g_v = _mm256_set1_epi32((uint32_t)(p2_g[0]));

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import glob
 import os
 
-input_images = glob.glob("../code/images/*.png")
+input_images = glob.glob("../img/*.png")
 input_type = ["1", "2"]
 test_matrix = []
 
@@ -31,7 +31,7 @@ print("Generating graphs")
 df = pd.read_csv("benchmark.csv")
 
 # Strip prefix from parameters column
-df["parameter_param"] = df["parameter_param"].str.replace("../code/images/", "")
+df["parameter_param"] = df["parameter_param"].str.replace("../img/", "")
 df["parameter_param"] = df["parameter_param"].str.replace(" out.png", "")
 
 # rename parametesr_param to parameters
@@ -46,7 +46,7 @@ df["parameters"] = df["parameters"].str.replace(" 2", "")
 df["mean"] = df["mean"] * 1000
 
 # plot rect graph for each image with two bars for each type
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(10, 6))
 width = 0.35
 x = np.arange(len(df["parameters"].unique()))
 

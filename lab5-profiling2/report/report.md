@@ -23,7 +23,7 @@ header-includes:
 - Architecture : Intel x86_64
 - CPU : i7-1165G7 8-core @ 4.7 GHz
   - Cache L1d : 192 KiB
-  - Cache L1d : 128 KiB
+  - Cache L1i : 128 KiB
   - Cache L2 : 5 MiB
   - Cache L3 : 12 MiB
 - OS: Ubuntu 24.04
@@ -113,7 +113,9 @@ Résultat de `perf stat`
 
 ## Proposition d'amélioration
 
-Le programme est au final assez simple, toutefois on peut clairement se passer de toutes ses opérations IO, ce que j'ai donc fait : j'ai réécrit tout la fonction permettant d'encoder un message dans une image mais en utilisant cette fois-ci un buffer contenant toute l'image originale. Toutes les modifications sont effectuées directement dessus au lieu comme auparavant de traiter un caractère à la fois en utilisant les fonctions d'IO.
+Le programme est au final assez simple, toutefois on peut clairement se passer de toutes ses opérations IO, ce que j'ai donc fait : j'ai réécrit toute la fonction permettant d'encoder un message dans une image mais en utilisant cette fois-ci un buffer contenant toute l'image originale. Toutes les modifications sont effectuées directement dessus au lieu comme auparavant de traiter un caractère à la fois en utilisant les fonctions d'IO.
+
+À noter qu'elle n'est pas 100% utilisable car elle ne prend pas les inputs utilisateurs, elle permettra d'effectuer les tests et effectuer des comparaisons avec la version avec toutes les opérations IO.
 
 D'un point de vue temps de traitement on y gagne énormément puisque les fonctions IO sont bloquantes et impliquent des context-switchs ce qui ralentit les performances entre autres.
 
@@ -123,11 +125,11 @@ Voici les résultats obtenus avec `hyperfine` :
 $ hyperfine --warmup 10 -N './stegano -testa' './stegano -testb'
 
 Benchmark 1: ./stegano -testa
-  Time (mean ± σ):     313.1 µs ±  66.9 µs    [User: 215.8 µs, System: 71.1 µs]
+  Time (mean ± std):     313.1 µs ±  66.9 µs    [User: 215.8 µs, System: 71.1 µs]
   Range (min … max):   237.5 µs … 1115.9 µs    2697 runs
 
 Benchmark 2: ./stegano -testb
-  Time (mean ± σ):     986.2 µs ± 263.0 µs    [User: 556.0 µs, System: 377.5 µs]
+  Time (mean ± std):     986.2 µs ± 263.0 µs    [User: 556.0 µs, System: 377.5 µs]
   Range (min … max):   853.7 µs … 9679.9 µs    3085 runs
 
 Summary

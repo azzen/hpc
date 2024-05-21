@@ -138,3 +138,7 @@ Summary
 ```
 
 La version `-testa` est la version avec notre buffer dynamique, `-testb` est la version classique, on voit que simplement en retirant les appels à `fputc`, `fgetc` et `feof`, le programme est en moyenne 3 fois plus rapides.
+
+# Compilation
+
+Afin de compiler le programme, utiliser la commande `make all`

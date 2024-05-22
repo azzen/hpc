@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "*.ejs": "html",
-        "sobel.h": "c"
-    }
+        "sobel.h": "c",
+        "random": "c",
+        "stb_image_write.h": "c"
+    },
+    "cmake.sourceDirectory": "/root/dev/hpc/lab6-power-consumption/code",
+    "cmake.configureOnOpen": true
 }

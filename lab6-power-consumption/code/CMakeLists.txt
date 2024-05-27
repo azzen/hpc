@@ -35,4 +35,28 @@ target_include_directories(segmentation PUBLIC segmentation/include/)
 target_include_directories(segmentation PUBLIC lib/stb/)
 target_link_libraries(segmentation m)
 
+set(SEGMENTATION_PERF_SRC
+    segmentation_perf/src/main_segmentation.c
+    segmentation_perf/src/k-means.c
+    segmentation_perf/src/image.c
+)
 
+add_executable(segmentation_perf ${SEGMENTATION_PERF_SRC})
+
+target_include_directories(segmentation_perf PUBLIC segmentation_perf/include/)
+target_include_directories(segmentation_perf PUBLIC lib/stb/)
+target_include_directories(segmentation_perf PUBLIC lib/perfmanager/)
+target_link_libraries(segmentation_perf m)
+
+set(SEGMENTATION_PERF_SIMD_SRC
+    segmentation_perf_simd/src/main_segmentation.c
+    segmentation_perf_simd/src/k-means.c
+    segmentation_perf_simd/src/image.c
+)
+
+add_executable(segmentation_perf_simd ${SEGMENTATION_PERF_SRC})
+
+target_include_directories(segmentation_perf_simd PUBLIC segmentation_perf_simd/include/)
+target_include_directories(segmentation_perf_simd PUBLIC lib/stb/)
+target_include_directories(segmentation_perf_simd PUBLIC lib/perfmanager/)
+target_link_libraries(segmentation_perf_simd m)

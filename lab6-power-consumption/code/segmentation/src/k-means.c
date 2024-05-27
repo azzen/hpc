@@ -52,7 +52,7 @@ void kmeans_pp(struct img_1D_t *image, int num_clusters, uint8_t *centers){
         int index = 0;
 
         // Choose the next center based on weighted probability
-        while (r > distances[index]) {
+        while (index < image->width * image->height && r > distances[index]) {
             r -= distances[index];
             index++;
         }

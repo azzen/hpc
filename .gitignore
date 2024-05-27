@@ -2,5 +2,6 @@
 code/lab01
 **/.DS_Store
 **/venv
-**/lib
+**/stb
+
 **/build

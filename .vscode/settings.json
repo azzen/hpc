@@ -5,6 +5,6 @@
         "random": "c",
         "stb_image_write.h": "c"
     },
-    "cmake.sourceDirectory": "/root/dev/hpc/lab6-power-consumption/code",
+    "cmake.sourceDirectory": "/home/azzen/courses/hpc/hpc/lab6-power-consumption/code",
     "cmake.configureOnOpen": true
 }

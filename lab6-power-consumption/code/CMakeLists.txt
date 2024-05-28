@@ -60,3 +60,34 @@ target_include_directories(segmentation_perf_simd PUBLIC segmentation_perf_simd/
 target_include_directories(segmentation_perf_simd PUBLIC lib/stb/)
 target_include_directories(segmentation_perf_simd PUBLIC lib/perfmanager/)
 target_link_libraries(segmentation_perf_simd m)
+
+set(SEGMENTATION_POWERCAP_SIMD_SRC
+    segmentation_powercap_simd/src/main_segmentation.c
+    segmentation_powercap_simd/src/k-means.c
+    segmentation_powercap_simd/src/image.c
+)
+
+add_executable(segmentation_powercap_simd ${SEGMENTATION_POWERCAP_SIMD_SRC})
+
+target_include_directories(segmentation_powercap_simd PUBLIC segmentation_powercap_simd/include/)
+target_include_directories(segmentation_powercap_simd PUBLIC lib/stb/)
+target_include_directories(segmentation_powercap_simd PUBLIC lib/powercap/inc)
+
+target_link_libraries(segmentation_powercap_simd m)
+target_link_libraries(segmentation_powercap_simd powercap)
+
+
+set(SEGMENTATION_POWERCAP_SRC
+    segmentation_powercap/src/main_segmentation.c
+    segmentation_powercap/src/k-means.c
+    segmentation_powercap/src/image.c
+)
+
+add_executable(segmentation_powercap ${SEGMENTATION_POWERCAP_SRC})
+
+target_include_directories(segmentation_powercap PUBLIC segmentation_powercap/include/)
+target_include_directories(segmentation_powercap PUBLIC lib/stb/)
+target_include_directories(segmentation_powercap PUBLIC lib/powercap/inc)
+
+target_link_libraries(segmentation_powercap m)
+target_link_libraries(segmentation_powercap powercap)

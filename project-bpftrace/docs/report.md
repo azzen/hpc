@@ -1,7 +1,7 @@
 ---
 title: "HPC - Projet"
 subtitle: "`bpftrace`"
-author: "Rayane Annen"
+author: "Rayane Annen et Felix Breval"
 lang: fr
 date: \today
 geometry: margin=2cm

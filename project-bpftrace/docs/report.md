@@ -32,11 +32,12 @@ Sur un système Ubuntu (au minimum 19.04), on peut simplement utiliser la comman
 sudo apt install -y bpftrace
 ```
 
+TODO demander généric build
+
 ## Mise en place et sanity check
 
 Cette section présente la mise en place de l'outil et un petit test afin de s'assurer que le programme fonctionne correctement.
 
-
-
 # Procédure de test
 
+TODO procedure

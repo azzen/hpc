@@ -32,7 +32,7 @@ Sur un système Ubuntu (au minimum 19.04), on peut simplement utiliser la comman
 sudo apt install -y bpftrace
 ```
 
-TODO demander généric build
+Pour build le projet directement ou utiliser un autre package, une [page install](https://github.com/bpftrace/bpftrace/blob/master/INSTALL.md) est disponible.
 
 ## Mise en place et sanity check
 
@@ -40,4 +40,3 @@ Cette section présente la mise en place de l'outil et un petit test afin de s'a
 
 # Procédure de test
 
-TODO procedure

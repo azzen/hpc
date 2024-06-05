@@ -1,35 +1,38 @@
 #!/usr/bin/env bpftrace
 BEGIN
-{
-    printf("Tracing syscalls... Hit CTRL+C to end\n");
+{   
+    
+    printf("Tracing the program seg_simd... Hit CTRL+C to end\n");
 }
 
 
 tracepoint:syscalls:sys_enter_*
-/comm == "segmentation"/
+/comm == "seg_simd"/
 {
     @syscall_count[probe] = count();
 }
 
-uretprobe:build/segmentation:distance
-{
-    @calls[probe] = count();
-}
 
 tracepoint:exceptions:page_fault_user
-/comm == "segmentation"/
+/comm == "seg_simd"/
 {
     @page_faults = count();
 }
 
-END
+hardware:cpu-cycles
+/comm == "seg_simd"/
+{ 
+    @cpu_cycles = count(); 
+}
+
+
+tracepoint:syscalls:sys_enter_openat
+/comm == "seg_simd"/
 {
-    printf("Total syscalls:\n");
-    print(@syscall_count);
+    printf("Opening file: %s\n", str(args->filename));
+}
 
-    printf("Call to function distance\n");
-    print(@calls);
-
-    printf("Total page faults:\n");
-    print(@page_faults);
-    }
+uretprobe:build/seg_simd:distance
+{
+    @calls[probe] = count();
+}

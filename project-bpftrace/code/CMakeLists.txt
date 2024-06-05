@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.20)
 project(HPC_Lab05_power_consumption)
 
 set(CMAKE_C_STANDARD 11)
@@ -11,11 +11,11 @@ set(SEGMENTATION_SIMD_SRC
     segmentation_simd/src/image.c
 )
 
-add_executable(segmentation_simd ${SEGMENTATION_SIMD_SRC})
+add_executable(seg_simd ${SEGMENTATION_SIMD_SRC})
 
-target_include_directories(segmentation_simd PUBLIC segmentation_simd/include)
-target_include_directories(segmentation_simd PUBLIC lib/stb/)
-target_link_libraries(segmentation_simd m)
+target_include_directories(seg_simd PUBLIC segmentation_simd/include)
+target_include_directories(seg_simd PUBLIC lib/stb/)
+target_link_libraries(seg_simd m)
 
 set(SEGMENTATION_SRC
     segmentation/src/main_segmentation.c

@@ -36,10 +36,6 @@ sudo apt install -y bpftrace
 
 Pour build le projet directement ou utiliser un autre gestionnaire de package, une [page d'installation](https://github.com/bpftrace/bpftrace/blob/master/INSTALL.md) est disponible.
 
-## Mise en place et sanity check
-
-Cette section présente la mise en place de l'outil et un petit test afin de s'assurer que le programme fonctionne correctement.
-
 # Procédure de test
 
 Afin de pouvoir s'assurer du bon fonctionnement du programme, une procédure de test a été mise en place.
